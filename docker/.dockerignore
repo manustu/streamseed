@@ -1,0 +1,4 @@
+mariadb_data/
+portainer_data/
+*.pyc
+__pycache__/

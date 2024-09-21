@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  ss_mariadb:
+    image: mariadb:latest
+    container_name: ss_mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: TheStr34ms33dp@ssw0rd#20060925
+      MYSQL_DATABASE: streamseed
+      MYSQL_USER: sramsay
+      MYSQL_PASSWORD: Mystreamseedpassw0rd
+      PUID: 1000
+      PGID: 1000
+    volumes:
+      - ./mariadb_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - backend
+
+  ss_portainer:
+    image: portainer/portainer-ce:latest
+    container_name: ss_portainer
+    restart: always
+    ports:
+      - "9339:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer_data:/data
+    networks:
+      - frontend
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_app
+    restart: always
+    environment:
+      DATABASE_URL: "mysql+pymysql://sramsay:Mystreamseedpassw0rd@ss_mariadb/streamseed"
+      PUID: 1000
+      PGID: 1000
+    ports:
+      - "8000:80"
+    env_file:
+      - .env
+    depends_on:
+      - ss_mariadb
+    networks:
+      - backend
+
+volumes:
+  mariadb_data:
+  portainer_data:
+
+networks:
+  backend:
+  frontend:

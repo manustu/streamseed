@@ -1,0 +1,6 @@
+
+docker/mariadb_data/ddl_recovery-backup.log
+mariadb_data_1/
+portainer_data_1/
+mariadb_data/
+portainer_data/
