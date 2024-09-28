@@ -1,3 +1,4 @@
+nginx_proxy*/
 mariadb_data/
 portainer_data/
 *.pyc

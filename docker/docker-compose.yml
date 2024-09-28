@@ -50,26 +50,54 @@ services:
     networks:
       - backend
 
-  nginx:
-    image: nginx:latest
-    container_name: nginx-container
-    ports:
-      - 81:80
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf  # Your nginx configuration file
-      - ./web_server:/usr/share/nginx/html  # PHP application files
-    depends_on:
-      - php-fpm
+  # nginx:
+  #   image: nginx:latest
+  #   container_name: nginx-container
+  #   ports:
+  #     - 83:80
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf  # Your nginx configuration file
+  #     - ./web_server:/usr/share/nginx/html  # PHP application files
+  #   depends_on:
+  #     - php-fpm
+  #   networks:
+  #     - backend
 
-  php-fpm:
-    image: php:7.4-fpm
-    container_name: php-fpm-container
+  # php-fpm:
+  #   image: php:7.4-fpm
+  #   container_name: php-fpm-container
+  #   volumes:
+  #     - ./web_server:/usr/share/nginx/html  # Same volume as Nginx to share PHP files
+  #   networks:
+  #     - backend
+
+  nginx_proxy_manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx_proxy_manager
+    restart: always
+    environment:
+      DB_MYSQL_HOST: ss_mariadb
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: sramsay
+      DB_MYSQL_PASSWORD: Mystreamseedpassw0rd
+      DB_MYSQL_NAME: streamseed
     volumes:
-      - ./web_server:/usr/share/nginx/html  # Same volume as Nginx to share PHP files
+      - ./nginx_proxy_manager_data:/data
+      - ./nginx_proxy_manager_letsencrypt:/etc/letsencrypt
+    ports:
+      - "84:80"     # For HTTP access
+      - "444:443"   # For HTTPS access
+      - "88:81"     # For Nginx Proxy Manager UI
+    depends_on:
+      - ss_mariadb
+    networks:
+      - backend
 
 volumes:
   mariadb_data:
   portainer_data:
+  nginx_proxy_manager_data:
+  nginx_proxy_manager_letsencrypt:
 
 networks:
   backend:
