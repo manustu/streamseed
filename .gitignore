@@ -9,3 +9,4 @@ docker/StreamSeedKey.ppk
 temp
 compress_and_send_db_to_aws.sh
 sync_db_to_aws.sh
+*.log
