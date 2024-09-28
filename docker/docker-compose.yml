@@ -13,7 +13,7 @@ services:
       PUID: 1000
       PGID: 1000
     volumes:
-      - ./mariadb_data:/var/lib/mysql
+      - ./mariadb_data:/config
     ports:
       - "3306:3306"
     networks:
