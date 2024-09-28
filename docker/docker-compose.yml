@@ -78,9 +78,9 @@ services:
     environment:
       DB_MYSQL_HOST: ss_mariadb
       DB_MYSQL_PORT: 3306
-      DB_MYSQL_USER: sramsay
-      DB_MYSQL_PASSWORD: Mystreamseedpassw0rd
-      DB_MYSQL_NAME: streamseed
+      DB_MYSQL_USER: nginx
+      DB_MYSQL_PASSWORD: Mutdrule01!
+      DB_MYSQL_NAME: nginx
     volumes:
       - ./nginx_proxy_manager_data:/data
       - ./nginx_proxy_manager_letsencrypt:/etc/letsencrypt
