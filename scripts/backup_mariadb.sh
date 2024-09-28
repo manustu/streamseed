@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define backup directory
-BACKUP_DIR="/home/ubuntu/backup_mariadb_data"
+BACKUP_DIR="/home/ubuntu/backups/mariadb"
 TIMESTAMP=$(date +"%Y%m%d%H%M%S")
 
 # Create backup directory if not exists
