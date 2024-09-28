@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   ss_mariadb:
-    image: mariadb:latest
+    image: linuxserver/mariadb:latest
     container_name: ss_mariadb
     restart: always
     environment:
@@ -49,6 +49,23 @@ services:
       - ss_mariadb
     networks:
       - backend
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-container
+    ports:
+      - 83:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Your nginx configuration file
+      - ./web_server:/usr/share/nginx/html  # PHP application files
+    depends_on:
+      - php-fpm
+
+  php-fpm:
+    image: php:7.4-fpm
+    container_name: php-fpm-container
+    volumes:
+      - ./web_server:/usr/share/nginx/html  # Same volume as Nginx to share PHP files
 
 volumes:
   mariadb_data:

@@ -4,3 +4,8 @@ mariadb_data_1/
 portainer_data_1/
 mariadb_data/
 portainer_data/
+docker/StreamSeedKey.pem
+docker/StreamSeedKey.ppk
+temp
+compress_and_send_db_to_aws.sh
+sync_db_to_aws.sh
