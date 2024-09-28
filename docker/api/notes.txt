@@ -1,0 +1,1 @@
+Will need to look at JWT (json web tokens with refresh tokens generated automatically)
