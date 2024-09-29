@@ -21,6 +21,7 @@ class ProjectResponse(BaseModel):
     description: str
     status: str
     user_id: int
+    campaign_count: int
 
     class Config:
         orm_mode = True
@@ -42,7 +43,20 @@ def create_project(project: ProjectCreate, db: Session = Depends(get_db), curren
 # Endpoint to get a list of all projects
 @router.get("/projects/", response_model=List[ProjectResponse], tags=["projects"])
 def read_projects(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    projects = db.query(Project).filter(Project.user_id == current_user.id).offset(skip).limit(limit).all()
+    # projects = db.query(Project).filter(Project.user_id == current_user.id).offset(skip).limit(limit).all()
+    projects = (
+        db.query(
+            Project,
+            func.count(Project.campaigns).label('campaign_count')  # Count the number of related campaigns
+        )
+        .filter(Project.user_id == current_user.id)
+        .join(Project.campaigns, isouter=True)  # Left outer join to include projects with 0 campaigns
+        .group_by(Project.id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+    
     return projects
 
 # Endpoint to get a specific project by ID
