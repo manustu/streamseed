@@ -20,6 +20,12 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 router = APIRouter()
 
+# # Pydantic models for request and response validation
+# class LoginRequest(BaseModel):
+#     email: str
+#     password: str
+
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -115,16 +121,48 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     
     return {"message": "User registered successfully", "user_id": new_user.id}
 
+
+# THE BELOW IS COMMENTED OUT AND REPLACED WITH SOMETHING WHICH SHOULD HANDLE 2 TYPES OF LOGIN REQUESTS - JSON AND FORM DATA
 # Login and generate JWT token
+# @router.post("/token", tags=["auth"])
+# def login_for_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
+#     user = authenticate_user(db, form_data.username, form_data.password)
+#     if not user:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Incorrect username or password",
+#             headers={"WWW-Authenticate": "Bearer"},
+#         )
+#     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+#     access_token = create_access_token(
+#         data={"sub": user.email}, expires_delta=access_token_expires
+#     )
+#     return {"access_token": access_token, "token_type": "bearer"}
+
 @router.post("/token", tags=["auth"])
-def login_for_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(db, form_data.username, form_data.password)
+def login_for_access_token(
+    db: Session = Depends(get_db),
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    login_data: UserLogin = Body(None)
+):
+    # Determine if JSON data was provided
+    if login_data:
+        email = login_data.email
+        password = login_data.password
+    else:
+        # Fall back to form data if JSON wasn't provided
+        email = form_data.username
+        password = form_data.password
+
+    # Authenticate the user
+    user = authenticate_user(db, email, password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
