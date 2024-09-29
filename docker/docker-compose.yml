@@ -29,7 +29,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./portainer_data:/data
     networks:
-      - host
+      - frontend
 
   fastapi:
     build:
@@ -101,4 +101,6 @@ volumes:
 
 networks:
   backend:
+    driver: bridge
   frontend:
+    driver: bridge
