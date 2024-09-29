@@ -18,7 +18,10 @@ SECRET_KEY = "your_secret_key_here"  # Replace with a secure key
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-router = APIRouter()
+# Create a router with redirect_slashes set to False
+router = APIRouter(
+    redirect_slashes=False
+)
 
 # # Pydantic models for request and response validation
 # class LoginRequest(BaseModel):

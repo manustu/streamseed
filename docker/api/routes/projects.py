@@ -8,7 +8,10 @@ from pydantic import BaseModel
 from typing import List
 
 # Create a FastAPI router for projects
-router = APIRouter()
+# Create a router with redirect_slashes set to False
+router = APIRouter(
+    redirect_slashes=False
+)
 
 # Pydantic models for request and response validation
 class ProjectCreate(BaseModel):

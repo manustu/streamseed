@@ -7,7 +7,10 @@ from pydantic import BaseModel
 from typing import List
 
 # Create a FastAPI router for campaigns
-router = APIRouter()
+# Create a router with redirect_slashes set to False
+router = APIRouter(
+    redirect_slashes=False
+)
 
 # Pydantic models for request and response validation
 class CampaignCreate(BaseModel):
