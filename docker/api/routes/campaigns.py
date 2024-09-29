@@ -8,7 +8,6 @@ from typing import List
 from datetime import datetime, date
 
 # Create a FastAPI router for campaigns
-# Create a router with redirect_slashes set to False
 router = APIRouter()
 
 # Pydantic models for request and response validation
@@ -35,7 +34,29 @@ class CampaignResponse(BaseModel):
         orm_mode = True
 
 # Endpoint to create a new campaign
-from datetime import datetime
+@router.post("/campaigns", response_model=CampaignResponse, tags=["campaigns"])
+def create_campaign(campaign: CampaignCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    project = db.query(Project).filter(Project.id == campaign.project_id, Project.user_id == current_user.id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    # Validate date logic
+    if campaign.start_date >= campaign.end_date:
+        raise HTTPException(status_code=400, detail="Start date must be before end date")
+
+    new_campaign = Campaign(
+        name=campaign.name,
+        description=campaign.description,
+        project_id=campaign.project_id,
+        requirements=campaign.requirements,
+        status=campaign.status,
+        start_date=campaign.start_date,
+        end_date=campaign.end_date
+    )
+    db.add(new_campaign)
+    db.commit()
+    db.refresh(new_campaign)
+    return new_campaign
 
 # Endpoint to get a list of all campaigns
 @router.get("/campaigns", response_model=List[CampaignResponse], tags=["campaigns"])
