@@ -44,7 +44,6 @@ def create_project(project: ProjectCreate, db: Session = Depends(get_db), curren
 # Endpoint to get a list of all projects
 @router.get("/projects/", response_model=List[ProjectResponse], tags=["projects"])
 def read_projects(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    # projects = db.query(Project).filter(Project.user_id == current_user.id).offset(skip).limit(limit).all()
     projects = (
         db.query(
             Project,
@@ -58,7 +57,20 @@ def read_projects(skip: int = 0, limit: int = 10, db: Session = Depends(get_db),
         .all()
     )
 
-    return projects
+    # Map each tuple to a ProjectResponse instance
+    project_responses = [
+        ProjectResponse(
+            id=project.id,
+            name=project.name,
+            description=project.description,
+            status=project.status,
+            user_id=project.user_id,
+            campaign_count=campaign_count
+        )
+        for project, campaign_count in projects
+    ]
+
+    return project_responses
 
 # Endpoint to get a specific project by ID
 @router.get("/projects/{project_id}", response_model=ProjectResponse, tags=["projects"])
