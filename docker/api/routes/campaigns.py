@@ -5,12 +5,11 @@ from ..database import get_db
 from .auth import get_current_user
 from pydantic import BaseModel
 from typing import List
+from datetime import datetime, date
 
 # Create a FastAPI router for campaigns
 # Create a router with redirect_slashes set to False
-router = APIRouter(
-    redirect_slashes=False
-)
+router = APIRouter()
 
 # Pydantic models for request and response validation
 class CampaignCreate(BaseModel):
@@ -18,9 +17,9 @@ class CampaignCreate(BaseModel):
     description: str
     project_id: int
     requirements: str
-    status: str = "pending"
-    start_date: str = None
-    end_date: str = None
+    status: str
+    start_date: date
+    end_date: date
 
 class CampaignResponse(BaseModel):
     id: int
@@ -36,25 +35,7 @@ class CampaignResponse(BaseModel):
         orm_mode = True
 
 # Endpoint to create a new campaign
-@router.post("/campaigns", response_model=CampaignResponse, tags=["campaigns"])
-def create_campaign(campaign: CampaignCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    project = db.query(Project).filter(Project.id == campaign.project_id, Project.user_id == current_user.id).first()
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
-
-    new_campaign = Campaign(
-        name=campaign.name,
-        description=campaign.description,
-        project_id=campaign.project_id,
-        requirements=campaign.requirements,
-        status=campaign.status,
-        start_date=campaign.start_date,
-        end_date=campaign.end_date
-    )
-    db.add(new_campaign)
-    db.commit()
-    db.refresh(new_campaign)
-    return new_campaign
+from datetime import datetime
 
 # Endpoint to get a list of all campaigns
 @router.get("/campaigns", response_model=List[CampaignResponse], tags=["campaigns"])
