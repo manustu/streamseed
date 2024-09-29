@@ -36,7 +36,7 @@ class CampaignResponse(BaseModel):
         orm_mode = True
 
 # Endpoint to create a new campaign
-@router.post("/campaigns/", response_model=CampaignResponse, tags=["campaigns"])
+@router.post("/campaigns", response_model=CampaignResponse, tags=["campaigns"])
 def create_campaign(campaign: CampaignCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     project = db.query(Project).filter(Project.id == campaign.project_id, Project.user_id == current_user.id).first()
     if not project:
@@ -57,7 +57,7 @@ def create_campaign(campaign: CampaignCreate, db: Session = Depends(get_db), cur
     return new_campaign
 
 # Endpoint to get a list of all campaigns
-@router.get("/campaigns/", response_model=List[CampaignResponse], tags=["campaigns"])
+@router.get("/campaigns", response_model=List[CampaignResponse], tags=["campaigns"])
 def read_campaigns(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     campaigns = db.query(Campaign).join(Project).filter(Project.user_id == current_user.id).offset(skip).limit(limit).all()
     return campaigns

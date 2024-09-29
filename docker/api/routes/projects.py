@@ -31,7 +31,7 @@ class ProjectResponse(BaseModel):
         orm_mode = True
 
 # Endpoint to create a new project
-@router.post("/projects/", response_model=ProjectResponse, tags=["projects"])
+@router.post("/projects", response_model=ProjectResponse, tags=["projects"])
 def create_project(project: ProjectCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     new_project = Project(
         name=project.name,
@@ -45,7 +45,7 @@ def create_project(project: ProjectCreate, db: Session = Depends(get_db), curren
     return new_project
 
 # Endpoint to get a list of all projects
-@router.get("/projects/", response_model=List[ProjectResponse], tags=["projects"])
+@router.get("/projects", response_model=List[ProjectResponse], tags=["projects"])
 def read_projects(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     projects = (
         db.query(
@@ -76,7 +76,7 @@ def read_projects(skip: int = 0, limit: int = 10, db: Session = Depends(get_db),
     return project_responses
 
 # Endpoint to get a specific project by ID
-@router.get("/projects/{project_id}", response_model=ProjectResponse, tags=["projects"])
+@router.get("/projects{project_id}", response_model=ProjectResponse, tags=["projects"])
 def read_project(project_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     project = db.query(Project).filter(Project.id == project_id, Project.user_id == current_user.id).first()
     if not project:
@@ -84,7 +84,7 @@ def read_project(project_id: int, db: Session = Depends(get_db), current_user: U
     return project
 
 # Endpoint to delete a project
-@router.delete("/projects/{project_id}", response_model=ProjectResponse, tags=["projects"])
+@router.delete("/projects{project_id}", response_model=ProjectResponse, tags=["projects"])
 def delete_project(project_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     project = db.query(Project).filter(Project.id == project_id, Project.user_id == current_user.id).first()
     if not project:
