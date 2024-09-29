@@ -35,6 +35,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      no-cache: true
     container_name: fastapi_app
     restart: always
     environment:
