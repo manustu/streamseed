@@ -1,10 +1,10 @@
 # Use an official Python runtime as a parent image
-FROM python:3.10-slim
+FROM python:3.10-slim-bullseye
+
 
 # Set the working directory in the container
 WORKDIR /app
 
-RUN sed -i 's|http://deb.debian.org/debian|http://deb.debian.org/debian-security|g' /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y ca-certificates
 
