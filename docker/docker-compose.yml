@@ -49,6 +49,9 @@ services:
       - ss_mariadb
     networks:
       - backend
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
   # nginx:
   #   image: nginx:latest
