@@ -8,10 +8,7 @@ from pydantic import BaseModel
 from typing import List
 
 # Create a FastAPI router for projects
-# Create a router with redirect_slashes set to False
-router = APIRouter(
-    redirect_slashes=False
-)
+router = APIRouter()
 
 # Pydantic models for request and response validation
 class ProjectCreate(BaseModel):
@@ -76,7 +73,7 @@ def read_projects(skip: int = 0, limit: int = 10, db: Session = Depends(get_db),
     return project_responses
 
 # Endpoint to get a specific project by ID
-@router.get("/projects{project_id}", response_model=ProjectResponse, tags=["projects"])
+@router.get("/projects/{project_id}", response_model=ProjectResponse, tags=["projects"])
 def read_project(project_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     project = db.query(Project).filter(Project.id == project_id, Project.user_id == current_user.id).first()
     if not project:
@@ -84,7 +81,7 @@ def read_project(project_id: int, db: Session = Depends(get_db), current_user: U
     return project
 
 # Endpoint to delete a project
-@router.delete("/projects{project_id}", response_model=ProjectResponse, tags=["projects"])
+@router.delete("/projects/{project_id}", response_model=ProjectResponse, tags=["projects"])
 def delete_project(project_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     project = db.query(Project).filter(Project.id == project_id, Project.user_id == current_user.id).first()
     if not project:
