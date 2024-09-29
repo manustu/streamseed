@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, func
 from ..models import Project, User
 from ..database import get_db
 from .auth import get_current_user
@@ -56,7 +56,7 @@ def read_projects(skip: int = 0, limit: int = 10, db: Session = Depends(get_db),
         .limit(limit)
         .all()
     )
-    
+
     return projects
 
 # Endpoint to get a specific project by ID
