@@ -4,6 +4,8 @@ FROM python:3.10-slim
 # Set the working directory in the container
 WORKDIR /app
 
+RUN sed -i 's|http://deb.debian.org/debian|http://deb.debian.org/debian-security|g' /etc/apt/sources.list
+
 RUN apt-get update && apt-get install -y ca-certificates
 
 # Copy requirements.txt into the container at /app
