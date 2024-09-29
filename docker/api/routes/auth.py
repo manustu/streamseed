@@ -1,6 +1,6 @@
 import secrets
 from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, Depends, Request, status
+from fastapi import APIRouter, HTTPException, Depends, Request, status, Body
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from ..models import User
