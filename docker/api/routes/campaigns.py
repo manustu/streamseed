@@ -27,8 +27,8 @@ class CampaignResponse(BaseModel):
     project_id: int
     requirements: str
     status: str
-    start_date: str
-    end_date: str
+    start_date: date  # Change to date
+    end_date: date    # Change to date
 
     class Config:
         orm_mode = True
@@ -56,7 +56,8 @@ def create_campaign(campaign: CampaignCreate, db: Session = Depends(get_db), cur
     db.add(new_campaign)
     db.commit()
     db.refresh(new_campaign)
-    return new_campaign
+    
+    return new_campaign  # This will work with the updated CampaignResponse
 
 # Endpoint to get a list of all campaigns
 @router.get("/campaigns", response_model=List[CampaignResponse], tags=["campaigns"])
