@@ -1,9 +1,27 @@
-from sqlalchemy import Column, Integer, String, Boolean, Enum, TIMESTAMP, func, UniqueConstraint, ForeignKey, DateTime, Text, Date, JSON, Float
+# models.py
+
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Boolean,
+    Enum,
+    TIMESTAMP,
+    func,
+    UniqueConstraint,
+    ForeignKey,
+    DateTime,
+    Text,
+    Date,
+    JSON,
+    Float,
+)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
 Base = declarative_base()
+
 
 class User(Base):
     __tablename__ = "users"
@@ -24,8 +42,12 @@ class User(Base):
         UniqueConstraint('auth_provider', 'social_id', name='unique_social_provider'),
     )
 
-    # Relationship to sessions
+    # Relationships
     sessions = relationship("Session", back_populates="user")
+    projects = relationship("Project", back_populates="user")
+    sent_messages = relationship("Message", foreign_keys='Message.sender_id', back_populates="sender")
+    received_messages = relationship("Message", foreign_keys='Message.receiver_id', back_populates="receiver")
+    notifications = relationship("Notification", back_populates="user")
 
 
 class Session(Base):
@@ -42,6 +64,7 @@ class Session(Base):
     # Relationship to user
     user = relationship("User", back_populates="sessions")
 
+
 class Project(Base):
     __tablename__ = "projects"
 
@@ -49,12 +72,16 @@ class Project(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     name = Column(String(255), nullable=False)
     description = Column(Text)
-    status = Column(Enum('active', 'inactive', 'completed'), default='active')
+    # Removed the status column
+    # status = Column(Enum('active', 'inactive', 'completed'), default='active')
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
-
+    
     # Relationship with campaigns
     campaigns = relationship("Campaign", back_populates="project")
+
+    # Relationship with user
+    user = relationship("User", back_populates="projects")
 
 
 class Campaign(Base):
@@ -66,8 +93,9 @@ class Campaign(Base):
     description = Column(Text)
     requirements = Column(Text)
     start_date = Column(Date)
-    end_date = Column(Date) 
-    status = Column(Enum('pending', 'live', 'completed'), default='pending')
+    end_date = Column(Date)
+    # Removed the status column
+    # status = Column(Enum('pending', 'live', 'completed'), default='pending')
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
@@ -88,7 +116,7 @@ class Creator(Base):
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
 
-    # Relationship with campaign_creators
+    # Relationships with campaign_creators
     campaign_creators = relationship("CampaignCreator", back_populates="creator")
 
 
@@ -131,8 +159,8 @@ class Message(Base):
     created_at = Column(TIMESTAMP, server_default=func.now())
 
     # Relationships
-    sender = relationship("User", foreign_keys=[sender_id])
-    receiver = relationship("User", foreign_keys=[receiver_id])
+    sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_messages")
+    receiver = relationship("User", foreign_keys=[receiver_id], back_populates="received_messages")
 
 
 class Notification(Base):
@@ -145,7 +173,7 @@ class Notification(Base):
     created_at = Column(TIMESTAMP, server_default=func.now())
 
     # Relationship
-    user = relationship("User")
+    user = relationship("User", back_populates="notifications")
 
 
 class Rating(Base):
@@ -171,4 +199,3 @@ class Category(Base):
     description = Column(Text)
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
-
